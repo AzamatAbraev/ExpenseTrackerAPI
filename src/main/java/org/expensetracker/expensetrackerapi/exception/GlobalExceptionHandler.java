@@ -2,7 +2,6 @@ package org.expensetracker.expensetrackerapi.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -15,15 +14,15 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(ExpenseNotFoundException.class)
+    @ExceptionHandler(CustomNotFoundException.class)
     public ResponseEntity<ApiExceptionObject> handleExpenseNotFoundException(
-            ExpenseNotFoundException ex, WebRequest request) {
+            CustomNotFoundException ex, WebRequest request) {
         ApiExceptionObject exception = new ApiExceptionObject();
         exception.setMessage(ex.getMessage());
         exception.setHttpStatus(HttpStatus.NOT_FOUND);
         exception.setErrorCode(HttpStatus.NOT_FOUND.value());
         exception.setTimestamp(LocalDateTime.now());
-        exception.setThrowable(ex);
+        //exception.setThrowable(ex);
         return new ResponseEntity<>(exception, HttpStatus.NOT_FOUND);
     }
 
@@ -34,7 +33,7 @@ public class GlobalExceptionHandler {
         exception.setHttpStatus(HttpStatus.BAD_REQUEST);
         exception.setErrorCode(HttpStatus.BAD_REQUEST.value());
         exception.setTimestamp(LocalDateTime.now());
-        exception.setThrowable(ex);
+        //exception.setThrowable(ex);
         return new ResponseEntity<>(exception, HttpStatus.BAD_REQUEST);
     }
 
@@ -45,7 +44,7 @@ public class GlobalExceptionHandler {
         exception.setHttpStatus(HttpStatus.UNAUTHORIZED);
         exception.setErrorCode(HttpStatus.UNAUTHORIZED.value());
         exception.setTimestamp(LocalDateTime.now());
-        exception.setThrowable(ex);
+        //exception.setThrowable(ex);
         return new ResponseEntity<>(exception, HttpStatus.UNAUTHORIZED);
     }
 

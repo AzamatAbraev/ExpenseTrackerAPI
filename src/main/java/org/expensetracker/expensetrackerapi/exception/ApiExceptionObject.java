@@ -15,5 +15,5 @@ public class ApiExceptionObject {
     private HttpStatus httpStatus;
     private int errorCode;
     private LocalDateTime timestamp;
-    private Throwable throwable;
+//    private Throwable throwable;
 }
