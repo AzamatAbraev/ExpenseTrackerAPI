@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import org.expensetracker.expensetrackerapi.exception.CustomBadRequestException;
 import org.expensetracker.expensetrackerapi.model.expense.ExpenseDTO;
 import org.expensetracker.expensetrackerapi.model.expense.ExpenseRequestDTO;
+import org.expensetracker.expensetrackerapi.model.expense.TimeUnit;
 import org.expensetracker.expensetrackerapi.service.implementation.ExpenseServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,13 +35,30 @@ public class ExpenseController {
         return ResponseEntity.ok(expenses);
     }
 
-    @GetMapping("/filter")
+    @GetMapping("/filter/range")
     public ResponseEntity<List<ExpenseDTO>> getAllExpensesByDate(
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam String startDate,
             @RequestParam String endDate
     ) {
         List<ExpenseDTO> expenses = expenseService.getExpensesByDate(userDetails.getUsername(), startDate, endDate);
+        return ResponseEntity.ok(expenses);
+    }
+
+    @GetMapping("/filter/since")
+    public ResponseEntity<List<ExpenseDTO>> getAllExpenseByDateSince(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam TimeUnit unit,
+            @RequestParam Integer value) {
+        if (unit == null || value == null) {
+            throw new CustomBadRequestException("Both 'unit' and 'value' must be provided.");
+        }
+
+        if (value <= 0) {
+            throw new CustomBadRequestException("Value cannot be negative");
+        }
+
+        List<ExpenseDTO> expenses = expenseService.getExpensesByDateSince(userDetails.getUsername(), unit, value);
         return ResponseEntity.ok(expenses);
     }
 

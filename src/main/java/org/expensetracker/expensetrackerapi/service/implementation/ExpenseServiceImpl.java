@@ -7,11 +7,11 @@ import org.expensetracker.expensetrackerapi.exception.CustomNotFoundException;
 import org.expensetracker.expensetrackerapi.model.expense.Expense;
 import org.expensetracker.expensetrackerapi.model.expense.ExpenseDTO;
 import org.expensetracker.expensetrackerapi.model.expense.ExpenseRequestDTO;
+import org.expensetracker.expensetrackerapi.model.expense.TimeUnit;
 import org.expensetracker.expensetrackerapi.model.user.User;
 import org.expensetracker.expensetrackerapi.repository.ExpenseRepository;
 import org.expensetracker.expensetrackerapi.repository.UserRepository;
 import org.expensetracker.expensetrackerapi.service.ExpenseService;
-import org.expensetracker.expensetrackerapi.utils.DateValidatorUtil;
 import org.expensetracker.expensetrackerapi.utils.ExpenseMapper;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +21,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -65,6 +66,19 @@ public class ExpenseServiceImpl implements ExpenseService {
             throw new RuntimeException("Unexpected error occurred", e);
         }
 
+    }
+
+    @Override
+    public List<ExpenseDTO> getExpensesByDateSince(String email, TimeUnit unit, Integer value) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new CustomNotFoundException("User not found"));
+
+        LocalDate since = switch (unit) {
+            case WEEK -> LocalDate.now().minusWeeks(value);
+            case MONTH -> LocalDate.now().minusMonths(value);
+        };
+
+        List<Expense> expenses = expenseRepository.findByUserAndDateAfter(user, since.atStartOfDay());
+        return expenses.stream().map(ExpenseMapper::toDTO).collect(Collectors.toList());
     }
 
     @Override
